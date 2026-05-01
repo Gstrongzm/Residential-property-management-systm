@@ -72,18 +72,9 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
-    <!-- 错误页面配置 -->
-    <error-page>
-        <error-code>404</error-code>
-        <location>/WEB-INF/jsp/common/error.jsp</location>
-    </error-page>
-    <error-page>
-        <error-code>500</error-code>
-        <location>/WEB-INF/jsp/common/error.jsp</location>
-    </error-page>
 
     <!-- ==================== Servlet 配置 ==================== -->
-    
+
     <!-- 登录 Servlet -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
