@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+                             https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
+
+    <!-- 应用名称 -->
+    <display-name>小区物业管理系统</display-name>
+
+    <!-- 应用描述 -->
+    <description>面向物业管理员、小区住户、物业工作人员、外部广告申请企业的小区物业管理系统</description>
+
+    <!-- 全局编码过滤器配置 -->
+    <filter>
+        <filter-name>encodingFilter</filter-name>
+        <filter-class>com.property.filter.EncodingFilter</filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>encodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- 登录拦截过滤器配置 -->
+    <filter>
+        <filter-name>loginFilter</filter-name>
+        <filter-class>com.property.filter.LoginFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/WEB-INF/jsp/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/servlet/AdminServlet</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/servlet/ResidentServlet</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/servlet/StaffServlet</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>loginFilter</filter-name>
+        <url-pattern>/servlet/AdvertiserServlet</url-pattern>
+    </filter-mapping>
+
+    <!-- 项目启动监听器配置 -->
+    <listener>
+        <listener-class>com.property.listener.ApplicationInitListener</listener-class>
+    </listener>
+
+    <!-- 会话监听器配置 -->
+    <listener>
+        <listener-class>com.property.listener.SessionListener</listener-class>
+    </listener>
+
+    <!-- 欢迎页面配置 -->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>login.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!-- 会话超时时间（分钟） -->
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
+
+    <!-- 错误页面配置 -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/WEB-INF/jsp/common/error.jsp</location>
+    </error-page>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/WEB-INF/jsp/common/error.jsp</location>
+    </error-page>
+
+    <!-- ==================== Servlet 配置 ==================== -->
+    
+    <!-- 登录 Servlet -->
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>com.property.servlet.LoginServlet</servlet-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/servlet/LoginServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- 管理员 Servlet -->
+    <servlet>
+        <servlet-name>AdminServlet</servlet-name>
+        <servlet-class>com.property.servlet.AdminServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdminServlet</servlet-name>
+        <url-pattern>/servlet/AdminServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- 住户 Servlet -->
+    <servlet>
+        <servlet-name>ResidentServlet</servlet-name>
+        <servlet-class>com.property.servlet.ResidentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ResidentServlet</servlet-name>
+        <url-pattern>/servlet/ResidentServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- 工作人员 Servlet -->
+    <servlet>
+        <servlet-name>StaffServlet</servlet-name>
+        <servlet-class>com.property.servlet.StaffServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StaffServlet</servlet-name>
+        <url-pattern>/servlet/StaffServlet</url-pattern>
+    </servlet-mapping>
+
+    <!-- 广告商 Servlet -->
+    <servlet>
+        <servlet-name>AdvertiserServlet</servlet-name>
+        <servlet-class>com.property.servlet.AdvertiserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AdvertiserServlet</servlet-name>
+        <url-pattern>/servlet/AdvertiserServlet</url-pattern>
+    </servlet-mapping>
+
+</web-app>
