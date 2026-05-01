@@ -7,6 +7,11 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%
+  // 从session获取数据，方便后面使用
+  com.property.entity.User currentUser = (com.property.entity.User) session.getAttribute("currentUser");
+  com.property.entity.Resident residentInfo = (com.property.entity.Resident) session.getAttribute("residentInfo");
+%>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -22,25 +27,21 @@
 
     body {
       font-family: 'Microsoft YaHei', Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      padding: 2rem;
+      background: #f5f5f5;
     }
 
     .navbar {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 1rem 2rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 2rem;
-      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     .navbar h1 {
-      color: #667eea;
-      font-size: 1.5rem;
+      color: white;
+      font-size: 20px;
     }
 
     .nav-links {
@@ -50,152 +51,160 @@
     }
 
     .nav-links a {
+      color: white;
       text-decoration: none;
-      color: #333;
-      padding: 0.5rem 1rem;
+      padding: 8px 15px;
       border-radius: 5px;
-      transition: all 0.3s;
+      transition: background 0.3s;
     }
 
     .nav-links a:hover {
-      background: #667eea;
-      color: white;
+      background: rgba(255,255,255,0.2);
     }
 
     .container {
       max-width: 800px;
-      margin: 0 auto;
-      background: white;
-      border-radius: 15px;
-      padding: 2rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      margin: 30px auto;
+      padding: 20px;
     }
 
-    .container h2 {
-      color: #667eea;
-      margin-bottom: 1.5rem;
+    .content-card {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .content-card h2 {
+      color: #28a745;
+      margin-bottom: 25px;
       text-align: center;
+      font-size: 24px;
     }
 
     .profile-info {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
+      gap: 20px;
     }
 
     .info-item {
-      padding: 1rem;
+      padding: 15px;
       background: #f9f9f9;
       border-radius: 8px;
-      border-left: 4px solid #667eea;
+      border-left: 4px solid #28a745;
     }
 
     .info-item label {
       display: block;
       color: #666;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
+      font-size: 14px;
+      margin-bottom: 8px;
     }
 
     .info-item span {
       display: block;
       color: #333;
-      font-size: 1.1rem;
+      font-size: 16px;
       font-weight: bold;
     }
 
-    .edit-btn {
-      display: block;
-      width: 100%;
-      margin-top: 2rem;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .btn-back {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 30px;
+      background: #6c757d;
       color: white;
-      padding: 1rem;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
-      text-align: center;
       text-decoration: none;
+      border-radius: 5px;
+      text-align: center;
+      transition: background 0.3s;
     }
 
-    .edit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    .btn-back:hover {
+      background: #5a6268;
     }
   </style>
 </head>
 <body>
 <div class="navbar">
-  <h1>👤 个人信息</h1>
+  <h1>🏠 个人信息</h1>
   <div class="nav-links">
-    <a href="${pageContext.request.contextPath}/servlet/ResidentServlet?action=index">首页</a>
-    <a href="${pageContext.request.contextPath}/servlet/ResidentServlet?action=repair">报修申请</a>
-    <a href="${pageContext.request.contextPath}/servlet/ResidentServlet?action=fee">缴费查询</a>
-    <a href="${pageContext.request.contextPath}/servlet/ResidentServlet?action=logout">退出登录</a>
+    <span style="color: white;">欢迎，<%= currentUser != null ? currentUser.getRealName() : "" %></span>
+    <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=index">首页</a>
+    <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=repair">报修申请</a>
+    <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=fee">缴费查询</a>
+    <a href="<%= request.getContextPath() %>/servlet/LoginServlet?action=logout">退出登录</a>
   </div>
 </div>
 
 <div class="container">
-  <h2>个人信息详情</h2>
+  <div class="content-card">
+    <h2>个人信息详情</h2>
 
-  <div class="profile-info">
-    <div class="info-item">
-      <label>用户名</label>
-      <span>${sessionScope.currentUser.username}</span>
+    <div class="profile-info">
+      <div class="info-item">
+        <label>用户名</label>
+        <span><%= currentUser != null ? currentUser.getUsername() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>姓名</label>
+        <span><%= currentUser != null && currentUser.getRealName() != null ? currentUser.getRealName() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>联系电话</label>
+        <span><%= currentUser != null && currentUser.getPhone() != null ? currentUser.getPhone() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>电子邮箱</label>
+        <span><%= currentUser != null && currentUser.getEmail() != null ? currentUser.getEmail() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>房号</label>
+        <span>
+          <%= residentInfo != null ?
+                  residentInfo.getBuildingNo() + "栋 " +
+                          residentInfo.getUnitNo() + "单元 " +
+                          residentInfo.getRoomNo() + "室" : "-" %>
+        </span>
+      </div>
+      <div class="info-item">
+        <label>面积</label>
+        <span><%= residentInfo != null && residentInfo.getArea() != null ? residentInfo.getArea() + " ㎡" : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>业主类型</label>
+        <span>
+          <%= residentInfo != null ?
+                  ("OWNER".equals(residentInfo.getOwnerType()) ? "业主" : "租户") : "-" %>
+        </span>
+      </div>
+      <div class="info-item">
+        <label>身份证号</label>
+        <span><%= residentInfo != null && residentInfo.getIdCard() != null ? residentInfo.getIdCard() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>家庭人数</label>
+        <span><%= residentInfo != null && residentInfo.getFamilyCount() != null ? residentInfo.getFamilyCount() + " 人" : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>入住日期</label>
+        <span><%= residentInfo != null && residentInfo.getMoveInDate() != null ? residentInfo.getMoveInDate() : "-" %></span>
+      </div>
+      <div class="info-item">
+        <label>账户状态</label>
+        <span style="color: <%= currentUser != null && currentUser.getStatus() == 1 ? "#28a745" : "#dc3545" %>;">
+          <%= currentUser != null ? (currentUser.getStatus() == 1 ? "正常" : "禁用") : "未知" %>
+        </span>
+      </div>
+      <div class="info-item">
+        <label>注册时间</label>
+        <span><%= currentUser != null && currentUser.getCreateTime() != null ? currentUser.getCreateTime() : "-" %></span>
+      </div>
     </div>
-    <div class="info-item">
-      <label>姓名</label>
-      <c:choose>
-        <c:when test="${not empty sessionScope.residentInfo}">
-          <span>${sessionScope.residentInfo.name}</span>
-        </c:when>
-        <c:otherwise>
-          <span>-</span>
-        </c:otherwise>
-      </c:choose>
-    </div>
-    <div class="info-item">
-      <label>房号</label>
-      <c:choose>
-        <c:when test="${not empty sessionScope.residentInfo}">
-          <span>${sessionScope.residentInfo.roomNumber}</span>
-        </c:when>
-        <c:otherwise>
-          <span>-</span>
-        </c:otherwise>
-      </c:choose>
-    </div>
-    <div class="info-item">
-      <label>联系电话</label>
-      <c:choose>
-        <c:when test="${not empty sessionScope.residentInfo}">
-          <span>${sessionScope.residentInfo.phone}</span>
-        </c:when>
-        <c:otherwise>
-          <span>-</span>
-        </c:otherwise>
-      </c:choose>
-    </div>
-    <div class="info-item">
-      <label>入住时间</label>
-      <c:choose>
-        <c:when test="${not empty sessionScope.residentInfo}">
-          <span>${sessionScope.residentInfo.moveInDate}</span>
-        </c:when>
-        <c:otherwise>
-          <span>-</span>
-        </c:otherwise>
-      </c:choose>
-    </div>
-    <div class="info-item">
-      <label>账户状态</label>
-      <span>${sessionScope.currentUser.status == 'ACTIVE' ? '正常' : '禁用'}</span>
-    </div>
+
+    <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=index" class="btn-back">返回首页</a>
   </div>
-
-  <a href="#" class="edit-btn">编辑信息（待实现）</a>
 </div>
 </body>
 </html>
