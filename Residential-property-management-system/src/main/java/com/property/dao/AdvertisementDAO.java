@@ -11,7 +11,7 @@ import java.util.List;
  * 广告申请数据访问层
  */
 public class AdvertisementDAO {
-    
+
     /**
      * 根据ID查询广告申请
      */
@@ -20,13 +20,13 @@ public class AdvertisementDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, adId);
             rs = pstmt.executeQuery();
-            
+
             if (rs.next()) {
                 return resultSetToAdvertisement(rs);
             }
@@ -35,7 +35,7 @@ public class AdvertisementDAO {
             DBUtil.close(conn, pstmt, rs);
         }
     }
-    
+
     /**
      * 根据用户ID查询广告申请列表
      */
@@ -44,13 +44,13 @@ public class AdvertisementDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
             rs = pstmt.executeQuery();
-            
+
             List<Advertisement> list = new ArrayList<>();
             while (rs.next()) {
                 list.add(resultSetToAdvertisement(rs));
@@ -60,7 +60,7 @@ public class AdvertisementDAO {
             DBUtil.close(conn, pstmt, rs);
         }
     }
-    
+
     /**
      * 查询所有广告申请（可按状态过滤）
      */
@@ -69,7 +69,7 @@ public class AdvertisementDAO {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        
+
         if (status != null && !status.isEmpty()) {
             sql = "SELECT * FROM advertisement_applications WHERE status = ? ORDER BY apply_time DESC";
             conn = DBUtil.getConnection();
@@ -80,7 +80,7 @@ public class AdvertisementDAO {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
         }
-        
+
         rs = pstmt.executeQuery();
         List<Advertisement> list = new ArrayList<>();
         while (rs.next()) {
@@ -88,7 +88,7 @@ public class AdvertisementDAO {
         }
         return list;
     }
-    
+
     /**
      * 插入广告申请
      */
@@ -96,7 +96,7 @@ public class AdvertisementDAO {
         String sql = "INSERT INTO advertisement_applications (user_id, company_name, contact_person, contact_phone, ad_type, ad_location, ad_duration, ad_content, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -109,7 +109,7 @@ public class AdvertisementDAO {
             pstmt.setInt(7, ad.getAdDuration() != null ? ad.getAdDuration() : 0);
             pstmt.setString(8, ad.getAdContent());
             pstmt.setString(9, ad.getStatus() != null ? ad.getStatus() : "PENDING");
-            
+
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 ResultSet rs = pstmt.getGeneratedKeys();
@@ -122,7 +122,7 @@ public class AdvertisementDAO {
             DBUtil.close(conn, pstmt, null);
         }
     }
-    
+
     /**
      * 更新广告申请（审核）
      */
@@ -130,7 +130,7 @@ public class AdvertisementDAO {
         String sql = "UPDATE advertisement_applications SET status = ?, review_admin_id = ?, review_time = ?, review_comment = ? WHERE ad_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
@@ -139,13 +139,13 @@ public class AdvertisementDAO {
             pstmt.setTimestamp(3, ad.getReviewTime() != null ? new Timestamp(ad.getReviewTime().getTime()) : null);
             pstmt.setString(4, ad.getReviewComment());
             pstmt.setInt(5, ad.getAdId());
-            
+
             return pstmt.executeUpdate();
         } finally {
             DBUtil.close(conn, pstmt, null);
         }
     }
-    
+
     /**
      * 删除广告申请
      */
@@ -153,7 +153,7 @@ public class AdvertisementDAO {
         String sql = "DELETE FROM advertisement_applications WHERE ad_id = ?";
         Connection conn = null;
         PreparedStatement pstmt = null;
-        
+
         try {
             conn = DBUtil.getConnection();
             pstmt = conn.prepareStatement(sql);
@@ -163,7 +163,7 @@ public class AdvertisementDAO {
             DBUtil.close(conn, pstmt, null);
         }
     }
-    
+
     /**
      * ResultSet转Advertisement对象
      */
