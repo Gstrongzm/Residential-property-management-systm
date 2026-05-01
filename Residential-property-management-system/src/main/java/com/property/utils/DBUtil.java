@@ -9,22 +9,25 @@ import java.sql.SQLException;
  * 适配 MySQL 5.5.28，使用原生 JDBC 连接
  */
 public class DBUtil {
-    
+
     // 数据库配置（严格遵循要求）
     private static final String DRIVER = "com.mysql.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost:3306/property_management?useSSL=false&serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8";
     private static final String USERNAME = "root";
-    private static final String PASSWORD = "123456";
-    
+    private static final String PASSWORD = "123";
+
     static {
         try {
-            // 加载驱动
+            // 加载驱动，如果这里失败，后续所有数据库操作都会崩
             Class.forName(DRIVER);
+            System.out.println("MySQL Driver loaded successfully.");
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException("数据库驱动加载失败：" + e.getMessage(), e);
+            System.err.println("ERROR: MySQL Driver not found! Please check pom.xml dependencies.");
+            e.printStackTrace();
+            // 这里不要抛出异常阻止类加载，但要打印错误以便调试
         }
     }
-    
+
     /**
      * 获取数据库连接
      * @return Connection 数据库连接对象
@@ -33,7 +36,7 @@ public class DBUtil {
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL, USERNAME, PASSWORD);
     }
-    
+
     /**
      * 关闭资源
      * @param conn 连接
@@ -63,7 +66,7 @@ public class DBUtil {
             }
         }
     }
-    
+
     /**
      * 关闭资源和 PreparedStatement
      * @param conn 连接
