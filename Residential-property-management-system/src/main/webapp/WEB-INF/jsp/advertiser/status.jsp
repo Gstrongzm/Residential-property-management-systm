@@ -1,221 +1,166 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: M
+  Date: 2026/5/1
+  Time: 23:45
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.property.entity.User" %>
 <%@ page import="com.property.entity.Advertisement" %>
 <%@ page import="java.util.List" %>
 <%
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect(request.getContextPath() + "/login.jsp");
-        return;
-    }
-    List<Advertisement> applications = (List<Advertisement>) request.getAttribute("applications");
+  // 1. 权限验证
+  User currentUser = (User) session.getAttribute("currentUser");
+  if (currentUser == null || !"ADVERTISER".equals(currentUser.getRole())) {
+    response.sendRedirect(request.getContextPath() + "/login.jsp");
+    return;
+  }
+
+  // 2. 获取数据 (从 request 域中获取 Servlet 传来的列表)
+  List<Advertisement> applyList = (List<Advertisement>) request.getAttribute("applyList");
+  String message = (String) request.getAttribute("message");
+  if (message == null) message = "";
 %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>审核状态 - 小区物业管理系统</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>审核状态 - 小区物业管理系统</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: #f5f5f5; }
 
-        body {
-            font-family: 'Microsoft YaHei', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 2rem;
-        }
+    .navbar {
+      background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+      color: white; padding: 15px 30px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .navbar h1 { font-size: 20px; }
+    .nav-links a {
+      color: white; text-decoration: none; margin-left: 20px;
+      padding: 8px 15px; border-radius: 5px; transition: background 0.3s;
+    }
+    .nav-links a:hover { background: rgba(255,255,255,0.2); }
 
-        .navbar {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            border-radius: 10px;
-        }
+    .container { max-width: 1200px; margin: 30px auto; padding: 20px; }
 
-        .navbar h1 {
-            color: #667eea;
-            font-size: 1.5rem;
-        }
+    .status-card {
+      background: white; padding: 30px; border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-        .nav-links {
-            display: flex;
-            gap: 1.5rem;
-            align-items: center;
-        }
+    table {
+      width: 100%; border-collapse: collapse; margin-top: 20px;
+    }
+    th, td {
+      padding: 15px; text-align: left; border-bottom: 1px solid #eee;
+    }
+    th { background: #f8f9fa; color: #333; font-weight: 600; }
+    tr:hover { background: #f1f1f1; }
 
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            transition: all 0.3s;
-        }
+    .badge {
+      padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold;
+    }
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-approved { background: #d4edda; color: #155724; }
+    .badge-rejected { background: #f8d7da; color: #721c24; }
 
-        .nav-links a:hover {
-            background: #667eea;
-            color: white;
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .container h2 {
-            color: #667eea;
-            margin-bottom: 1.5rem;
-        }
-
-        .status-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-        }
-
-        .status-table th,
-        .status-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .status-table th {
-            background: #f5f5f5;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .status-table tr:hover {
-            background: #f9f9f9;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: bold;
-        }
-
-        .status-pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-approved {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        .status-rejected {
-            background: #f8d7da;
-            color: #721c24;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 3rem;
-            color: #666;
-        }
-
-        .empty-message p {
-            margin-bottom: 1rem;
-        }
-
-        .empty-message a {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0.75rem 2rem;
-            border-radius: 25px;
-            text-decoration: none;
-            transition: all 0.3s;
-        }
-
-        .empty-message a:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-    </style>
+    .empty-tip {
+      text-align: center; padding: 40px; color: #999;
+    }
+    .alert {
+      padding: 15px; background: #d4edda; color: #155724;
+      border-radius: 5px; margin-bottom: 20px;
+    }
+    .btn-back {
+      display: inline-block; margin-top: 20px;
+      padding: 10px 20px; background: #6c757d; color: white;
+      text-decoration: none; border-radius: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div class="navbar">
-        <h1>📊 审核状态查询</h1>
-        <div class="nav-links">
-            <span>欢迎，<%= user.getName() %></span>
-            <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=index">首页</a>
-            <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=apply">申请入驻</a>
-            <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=logout">退出登录</a>
-        </div>
-    </div>
 
-    <div class="container">
-        <h2>我的申请记录</h2>
+<div class="navbar">
+  <h1>📢 广告商管理平台</h1>
+  <div class="nav-links">
+    <span>欢迎，<%= currentUser.getRealName() != null ? currentUser.getRealName() : currentUser.getUsername() %></span>
+    <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=apply">申请入驻</a>
+    <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=status">审核状态</a>
+    <a href="<%= request.getContextPath() %>/servlet/LoginServlet?action=logout">退出登录</a>
+  </div>
+</div>
 
-        <% if (applications != null && !applications.isEmpty()) { %>
-            <table class="status-table">
-                <thead>
-                    <tr>
-                        <th>申请编号</th>
-                        <th>企业名称</th>
-                        <th>广告类型</th>
-                        <th>申请时间</th>
-                        <th>审核状态</th>
-                        <th>审核意见</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for (Advertisement app : applications) { %>
-                        <tr>
-                            <td><%= app.getApplicationId() %></td>
-                            <td><%= app.getCompanyName() %></td>
-                            <td>
-                                <% 
-                                    String adType = app.getAdType();
-                                    if ("BILLBOARD".equals(adType)) out.print("户外广告牌");
-                                    else if ("ELEVATOR".equals(adType)) out.print("电梯广告");
-                                    else if ("COMMUNITY".equals(adType)) out.print("社区公告栏");
-                                    else if ("ONLINE".equals(adType)) out.print("线上平台");
-                                    else out.print("其他");
-                                %>
-                            </td>
-                            <td><%= app.getApplyTime() %></td>
-                            <td>
-                                <% 
-                                    String status = app.getStatus();
-                                    if ("PENDING".equals(status)) {
-                                        out.print("<span class=\"status-badge status-pending\">待审核</span>");
-                                    } else if ("APPROVED".equals(status)) {
-                                        out.print("<span class=\"status-badge status-approved\">已通过</span>");
-                                    } else if ("REJECTED".equals(status)) {
-                                        out.print("<span class=\"status-badge status-rejected\">已驳回</span>");
-                                    }
-                                %>
-                            </td>
-                            <td><%= (app.getReviewComment() != null && !app.getReviewComment().isEmpty()) ? app.getReviewComment() : "-" %></td>
-                        </tr>
-                    <% } %>
-                </tbody>
-            </table>
-        <% } else { %>
-            <div class="empty-message">
-                <p>暂无申请记录</p>
-                <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=apply">立即申请</a>
-            </div>
-        <% } %>
+<div class="container">
+  <div class="status-card">
+    <h2>📊 我的申请记录</h2>
+
+    <% if (message != null && !message.isEmpty()) { %>
+    <div class="alert"><%= message %></div>
+    <% } %>
+
+    <%
+      if (applyList == null || applyList.isEmpty()) {
+    %>
+    <div class="empty-tip">
+      <p>暂无申请记录</p>
+      <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=apply">去申请</a>
     </div>
+    <%
+    } else {
+    %>
+    <table>
+      <thead>
+      <tr>
+        <th>申请编号</th>
+        <th>公司名称</th>
+        <th>广告类型</th>
+        <th>申请时间</th>
+        <th>审核状态</th>
+        <th>审核意见</th>
+      </tr>
+      </thead>
+      <tbody>
+      <%
+        for (Advertisement ad : applyList) {
+          String adId = String.valueOf(ad.getAdId());
+          String companyName = ad.getCompanyName() != null ? ad.getCompanyName() : "未填写";
+          String adType = ad.getAdType() != null ? ad.getAdType() : "未指定";
+          String applyTime = ad.getApplyTime() != null ? ad.getApplyTime().toString() : "未知";
+
+          String status = ad.getStatus();
+          String statusBadge = "badge-pending";
+          String statusText = "审核中";
+
+          if ("APPROVED".equals(status)) {
+            statusBadge = "badge-approved";
+            statusText = "已通过";
+          } else if ("REJECTED".equals(status)) {
+            statusBadge = "badge-rejected";
+            statusText = "已驳回";
+          }
+
+          String reviewComment = ad.getReviewComment() != null ? ad.getReviewComment() : "-";
+      %>
+      <tr>
+        <td><%= adId %></td>
+        <td><%= companyName %></td>
+        <td><%= adType %></td>
+        <td><%= applyTime %></td>
+        <td><span class="badge <%= statusBadge %>"><%= statusText %></span></td>
+        <td><%= reviewComment %></td>
+      </tr>
+      <% } %>
+      </tbody>
+    </table>
+    <% } %>
+
+    <a href="<%= request.getContextPath() %>/servlet/AdvertiserServlet?action=index" class="btn-back">返回首页</a>
+  </div>
+</div>
+
 </body>
 </html>
