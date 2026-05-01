@@ -1,3 +1,10 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: M
+  Date: 2026/5/1
+  Time: 21:38
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="com.property.entity.User" %>
 <%
@@ -29,45 +36,45 @@
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <h1>🏠 住户服务中心</h1>
-        <div class="nav-links">
-            <span>欢迎，<%= currentUser.getRealName() %></span>
-            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=profile">个人信息</a>
-            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=repair">在线报修</a>
-            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=fee">费用查询</a>
-            <a href="<%= request.getContextPath() %>/servlet/LoginServlet?action=logout">退出登录</a>
+<div class="navbar">
+    <h1>🏠 住户服务中心</h1>
+    <div class="nav-links">
+        <span>欢迎，<%= currentUser.getRealName() %></span>
+        <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=profile">个人信息</a>
+        <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=repair">在线报修</a>
+        <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=fee">费用查询</a>
+        <a href="<%= request.getContextPath() %>/servlet/LoginServlet?action=logout">退出登录</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="welcome">
+        <h2>欢迎回家，<%= currentUser.getRealName() %>！</h2>
+        <p>如有问题请及时联系物业服务中心</p>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h3>👤 个人信息</h3>
+            <p>查看和修改个人基本信息</p>
+            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=profile">查看详情</a>
+        </div>
+        <div class="card">
+            <h3>🔧 在线报修</h3>
+            <p>提交维修申请、查看进度</p>
+            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=repair">提交报修</a>
+        </div>
+        <div class="card">
+            <h3>💰 费用查询</h3>
+            <p>查看缴费记录、账单详情</p>
+            <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=fee">查看账单</a>
+        </div>
+        <div class="card">
+            <h3>📰 通知公告</h3>
+            <p>查看小区最新通知</p>
+            <a href="#">查看详情</a>
         </div>
     </div>
-    
-    <div class="container">
-        <div class="welcome">
-            <h2>欢迎回家，<%= currentUser.getRealName() %>！</h2>
-            <p>如有问题请及时联系物业服务中心</p>
-        </div>
-        
-        <div class="dashboard">
-            <div class="card">
-                <h3>👤 个人信息</h3>
-                <p>查看和修改个人基本信息</p>
-                <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=profile">查看详情</a>
-            </div>
-            <div class="card">
-                <h3>🔧 在线报修</h3>
-                <p>提交维修申请、查看进度</p>
-                <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=repair">提交报修</a>
-            </div>
-            <div class="card">
-                <h3>💰 费用查询</h3>
-                <p>查看缴费记录、账单详情</p>
-                <a href="<%= request.getContextPath() %>/servlet/ResidentServlet?action=fee">查看账单</a>
-            </div>
-            <div class="card">
-                <h3>📰 通知公告</h3>
-                <p>查看小区最新通知</p>
-                <a href="#">查看详情</a>
-            </div>
-        </div>
-    </div>
+</div>
 </body>
 </html>
